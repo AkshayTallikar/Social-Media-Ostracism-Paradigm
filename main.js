@@ -64,7 +64,6 @@ $(function() {
   	$('#submit_username').on('click',function() {
   		var error = 0;
   		var uname = $('#username').val();
-
   		if(uname == "") {
   		  error = 1;
   		  errormsg = 'Please enter text';
@@ -77,6 +76,8 @@ $(function() {
   		if(error == 0) {
         $('#name').hide();
         window.username = $('#username').val();
+        const sendingUsername = $('#username').val();
+        alert(sendingUsername);
         init_avatar();
       } else {
         alertify.log(errormsg,"error");
@@ -106,6 +107,7 @@ $(function() {
     		if($('.selected').length == 1) {
           $('#avatar').hide();
           window.avatar = $('.selected').attr('id');
+          alert(window.avatar);
           window.avatarexport = /avatar_([^\s]+)/.exec(window.avatar)[1];
     			init_text();
     		} else {
@@ -140,6 +142,8 @@ $(function() {
   		if(error == 0) {
   			$('#text').hide();
   			window.description = $('#description').val();
+        const sendingDescription = $('#description').val();
+        alert(sendingDescription)
     		init_fb_intro();
     		} else {
     			alertify.log(errormsg,"error");
@@ -300,25 +304,39 @@ $(function() {
         }
       }
     });
-
+    var countlike = 0;
+    var countDislike = 0;
     // Initialize like buttons
     $('.btn-like').on('click', function() {
       $(this).prev().text(parseInt($(this).prev().text()) + 1);
-      
       // Like buttons can only be clicked once
+      countlike++;
+      alert(countlike);
       $(this).attr("disabled", true);
       $(this).parent().parent().find('.btn-like').attr("disabled", true);
     });
 
-
     // Initialize Dislike buttons
     $('.btn-Dislike').on('click', function() {
       $(this).prev().text(parseInt($(this).prev().text()) + 1);
-      
+      countDislike++;
+      alert(countDislike)
       // Like buttons can only be clicked once
       $(this).attr("disabled", true);
       $(this).parent().parent().find('.btn-Dislike').attr("disabled", true);
     });
+
+ 
+    // $('.btn-like').onclick = function () {
+      
+    //   countlike++;
+    //   alert(countlike);
+    // }
+
+    // $('.btn-Dislike').onclick = function () {
+    //   countDislike++;
+    //   alert(countDislike)
+    // }
 
     // Initalize Masonry plugin
     // For display of user and other players boxes in columns without gaps
