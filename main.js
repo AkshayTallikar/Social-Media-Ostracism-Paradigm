@@ -60,10 +60,11 @@ $(function() {
 
   function init_name() {
 
-  	$('#name').show();
+	$('#name').show();
   	$('#submit_username').on('click',function() {
   		var error = 0;
   		var uname = $('#username').val();
+
   		if(uname == "") {
   		  error = 1;
   		  errormsg = 'Please enter text';
@@ -76,8 +77,6 @@ $(function() {
   		if(error == 0) {
         $('#name').hide();
         window.username = $('#username').val();
-        const sendingUsername = $('#username').val();
-        alert(sendingUsername);
         init_avatar();
       } else {
         alertify.log(errormsg,"error");
