@@ -117,49 +117,50 @@ $(function() {
 
 
   // **Slide:** **Description**
+	
   function init_text() {
-  	$('#text').show();
-
-  	$("#description").keyup(function(){
-  	  $("#count").text("Characters left: " + (400 - $(this).val().length));
-  	});
-
-  	$('#submit_text').on('click',function() {
-  		var error = 0;
-  		if($('#description').val() == "") {
-  			error = 1;
-  			errormsg = 'Please enter text';
-  		}
-  		if($('#description').val() !== "" && $('#description').val().length < 140) {
-  			error = 1;
-  			errormsg = 'Please write a bit more';
-			}
-  		if($('#description').val().length > 401) {
-  			error = 1;
-  			errormsg = 'Please enter less text';
-  		}
-  		if(error == 0) {
-  			$('#text').hide();
-  			window.description = $('#description').val();
+    $('#text').show();
+  
+    $("#description").keyup(function () {
+      var inputText = $(this).val();
+      if (inputText.length > 400) {
+        $(this).val(inputText.substr(0, 400));
+      }
+  
+      var remainingChars = Math.max(0, 400 - inputText.length);
+      $("#count").text("Characters left: " + remainingChars);
+  
+      // Clear previous error messages
+      $('#error_message').text("");
+    });
+  
+    $('#submit_text').on('click', function () {
+      var error = 0;
+      var errormsg = "";
+  
+      if ($('#description').val() == "") {
+        error = 1;
+        errormsg = 'Please enter text';
+      } else if ($('#description').val().length < 200) {
+        error = 1;
+        errormsg = 'Please write a bit more (at least 200 characters)';
+      } else if ($('#description').val().length > 400) {
+        error = 1;
+        errormsg = 'Please enter 400 characters or less';
+      }
+  
+      if (error == 0) {
+        $('#text').hide();
+        window.description = $('#description').val();
         const sendingDescription = $('#description').val();
-        alert(sendingDescription)
-    		init_fb_intro();
-    		} else {
-    			alertify.log(errormsg,"error");
-    		}
-  	});
+        alert(sendingDescription);
+        init_fb_intro();
+      } else {
+        // Display the error message
+        $('#error_message').text(errormsg);
+      }
+    });
   }
-
-
-  // **Slide:** **Instructions**
-  function init_fb_intro() {
-  	$('#fb_intro').show();
-  	$('#submit_fb_intro').on('click',function() {
-			$('#fb_intro').hide();
- 			init_fb_login();
-  	});
-  }
-
 
   // **Slide:** **Login** **Screen**
   // Participant can continue after 8000ms = 8s
