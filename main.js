@@ -6,6 +6,13 @@
 $(function() {
   // **Parameters**
   // ------------
+
+  var totalLink = 'https://osu.az1.qualtrics.com/jfe/form/SV_eWY4YOSQN3iwdFQ?';
+  var globalUsername = "";
+  var globalAvatar = "";
+  var globalDescription = "";
+  var countlike = 0;
+  var countDislike = 0;
   function set_settings() {
     window.settings = [];
 
@@ -18,7 +25,7 @@ $(function() {
 	  // After the introduction task is over participants should be redirected to a survey with manipulation checks and dependent measures, to subsequent tasks, or to further instructions.
 	  // If the study is called with a parameter for redirection, as explained in the documentation, this value is overwritten.
 	  // To the redirect link, the following information will be appended: (1) participant number, (2) condition, (3) username, (4) description submitted by participant. These variables can be extracted from the link, saved as data, and used for linking the Social Media Ostracism paradigm to subsequent tasks and measures. See documentation for more details.
-    settings.defaultredirect = 'https://msu.co1.qualtrics.com/jfe/form/SV_6yWfqs7ndfVR0mq';
+    settings.defaultredirect = 'https://osu.az1.qualtrics.com/jfe/form/SV_eWY4YOSQN3iwdFQ';
 
 	  // **Tasklength**
     // Length of the group introduction task in milliseconds. Can be changed to any number (in ms). Default: 180000 (3min)
@@ -77,6 +84,8 @@ $(function() {
   		if(error == 0) {
         $('#name').hide();
         window.username = $('#username').val();
+        globalUsername = $('#username').val();
+        totalLink += "username=" + globalUsername;
         init_avatar();
       } else {
         alertify.log(errormsg,"error");
@@ -106,7 +115,8 @@ $(function() {
     		if($('.selected').length == 1) {
           $('#avatar').hide();
           window.avatar = $('.selected').attr('id');
-          alert(window.avatar);
+          globalAvatar = $('.selected').attr('id');
+          totalLink += "&avatar=" + globalAvatar;
           window.avatarexport = /avatar_([^\s]+)/.exec(window.avatar)[1];
     			init_text();
     		} else {
@@ -117,7 +127,6 @@ $(function() {
 
 
   // **Slide:** **Description**
-	
   function init_text() {
     $('#text').show();
   
@@ -152,8 +161,8 @@ $(function() {
       if (error == 0) {
         $('#text').hide();
         window.description = $('#description').val();
-        const sendingDescription = $('#description').val();
-        alert(sendingDescription);
+        globalDescription = $('#description').val();
+        totalLink += "&description=" + globalDescription
         init_fb_intro();
       } else {
         // Display the error message
@@ -161,6 +170,17 @@ $(function() {
       }
     });
   }
+
+
+  // **Slide:** **Instructions**
+  function init_fb_intro() {
+  	$('#fb_intro').show();
+  	$('#submit_fb_intro').on('click',function() {
+			$('#fb_intro').hide();
+ 			init_fb_login();
+  	});
+  }
+
 
   // **Slide:** **Login** **Screen**
   // Participant can continue after 8000ms = 8s
@@ -182,7 +202,6 @@ $(function() {
   function DeactivateLike() {
 	  setTimeout(function() { 
       $('.btn-like').attr("disabled", true);
-	    alert("You will now be redirected to a survey.");
     }, 3000);
   }
   function DeactivateDisLike(){
@@ -204,10 +223,12 @@ $(function() {
         $('#timer').text('00:00');
         DeactivateLike();
         DeactivateDisLike();
+        totalLink += "&likes=" + countlike;
+        totalLink += "&dislikes=" + countDislike;
         const timerLength = 10000; 
-        const redirectUrl = "https://osu.az1.qualtrics.com/jfe/form/SV_1HSU6hMMPkpKlaS ";
+        // const redirectUrl = "https://osu.az1.qualtrics.com/jfe/form/SV_eWY4YOSQN3iwdFQ";
         setTimeout(() => {
-          window.location.href = redirectUrl;
+          window.location.href = totalLink;
         }, timerLength);
       }
     });
@@ -304,14 +325,11 @@ $(function() {
         }
       }
     });
-    var countlike = 0;
-    var countDislike = 0;
     // Initialize like buttons
     $('.btn-like').on('click', function() {
       $(this).prev().text(parseInt($(this).prev().text()) + 1);
       // Like buttons can only be clicked once
       countlike++;
-      alert(countlike);
       $(this).attr("disabled", true);
       $(this).parent().parent().find('.btn-like').attr("disabled", true);
     });
@@ -320,7 +338,6 @@ $(function() {
     $('.btn-Dislike').on('click', function() {
       $(this).prev().text(parseInt($(this).prev().text()) + 1);
       countDislike++;
-      alert(countDislike)
       // Like buttons can only be clicked once
       $(this).attr("disabled", true);
       $(this).parent().parent().find('.btn-Dislike').attr("disabled", true);
