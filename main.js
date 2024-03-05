@@ -129,46 +129,46 @@ $(function() {
   // **Slide:** **Description**
   function init_text() {
     $('#text').show();
-  
+    
     $("#description").keyup(function () {
-      var inputText = $(this).val();
-      if (inputText.length > 400) {
-        $(this).val(inputText.substr(0, 400));
-      }
+      // Limit the input to 400 characters
+      $(this).val($(this).val().substr(0, 400));
   
-      var remainingChars = Math.max(0, 400 - inputText.length);
+      // Calculate remaining characters and update the count display
+      var remainingChars = Math.max(0, 400 - $(this).val().length);
       $("#count").text("Characters left: " + remainingChars);
   
       // Clear previous error messages
       $('#error_message').text("");
     });
   
+    // Event handler for submit button
     $('#submit_text').on('click', function () {
-      var error = 0;
-      var errormsg = "";
-  
-      if ($('#description').val() == "") {
-        error = 1;
-        errormsg = 'Please enter text';
-      } else if ($('#description').val().length < 200) {
-        error = 1;
-        errormsg = 'Please write a bit more (at least 200 characters)';
-      } else if ($('#description').val().length > 400) {
-        error = 1;
-        errormsg = 'Please enter 400 characters or less';
-      }
-  
-      if (error == 0) {
-        $('#text').hide();
-        window.description = $('#description').val();
-        globalDescription = $('#description').val();
-        totalLink += "&description=" + globalDescription
-        init_fb_intro();
+      // Get the entered description
+      var description = $('#description').val();
+    
+      // Validate conditions
+      if (!description || description.length < 200 || description.length > 400) {
+        // Show error message if validation fails
+        showError(description ? 'Please enter between 200 and 400 characters' : 'Please enter text');
       } else {
-        // Display the error message
-        $('#error_message').text(errormsg);
+        // If no errors, hide the text, store the description, show an alert, and initiate further action
+        $('#text').hide();
+        window.description = description;
+        alert(description);
+        init_fb_intro();
       }
     });
+  
+    // Function to display error messages and show an alert for less than 200 characters
+    function showError(message) {
+      $('#error_message').text(message);
+  
+      // If the entered text is less than 200 characters, show an alert
+      if ($('#description').val().length < 200) {
+        alert('Please note: You entered less than 200 characters.');
+      }
+    }
   }
 
 
