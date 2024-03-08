@@ -6,18 +6,38 @@ $(function() {
   var globalDescription = "";
   var countlike = 0;
   var countDislike = 0;
+  var conditions = {
+    // Condition 1 settings
+    1: { likes: [10000,20000,35000,45000,60000,78000,80000,100000,132000], dislikes: [] }, 
+     // Condition 2 settings
+    2: { likes: [10000,35000,80000,100000,132000,150000], dislikes: [] },
+     // Condition 3 settings
+    3: { likes: [10000,20000,35000], dislikes: [11111,22222,33333] }, 
+     // Condition 4 settings
+    4: { likes: [], dislikes: [10000,35000,80000,100000,132000,150000] }  
+  };
+  var assignedConditionNumber = getRandomInt(1, 4);
+  
   function set_settings() {
     window.settings = [];
     settings.numberofavatars = 82;
     settings.defaultredirect = 'https://osu.az1.qualtrics.com/jfe/form/SV_eWY4YOSQN3iwdFQ';
     settings.tasklength = 180000;
-    window.settings.condition_likes = [10000,20000,35000,45000,60000,78000,80000,100000,132000];
-    window.settings.condition_Dislikes = []
+    window.assignedCondition = assignedConditionNumber;
+
+    // Apply the likes and dislikes based on the randomly assigned condition
+   window.settings.condition_likes = conditions[assignedConditionNumber].likes;
+   window.settings.condition_Dislikes = conditions[assignedConditionNumber].dislikes;
+
     window.others.posts[1].likes = [12000,14000,15000,35000,80000];
     window.others.posts[1].Dislikes = [12000,14000,15000,35000,80000];
     settings.likes_by = ['Ky', 'Arjen', 'AncaD', 'Nick', 'Heather', 'Jane', 'Georgeee', 'John',  'Mary', 'Lauren', 'Sarah'];
     settings.Dislikes_by = [ 'Lauren', 'Arjen', 'Jane',  'Ky', 'AncaD', 'Nick', 'Heather', 'Georgeee', 'John', 'Mary', 'Sarah'];
     window.query_string =null;
+    alert("Assigned Condition Number:", window.assignedCondition);
+    alert("Likes for condition " + window.assignedCondition + ":", conditions[assignedConditionNumber].likes);
+    alert("Dislikes for condition " + window.assignedCondition + ":", conditions[assignedConditionNumber].dislikes);
+
   }
   
   // -------------------
@@ -113,34 +133,44 @@ function init_name() {
   // **Slide:** **Description**
   function init_text() {
     $('#text').show();
-    
-    $("#description").keyup(function () {
-      // Limit the input to 400 characters
-      $(this).val($(this).val().substr(0, 400));
   
-      // Calculate remaining characters and update the count display
-      var remainingChars = Math.max(0, 400 - $(this).val().length);
+    $("#description").keyup(function () {
+      var inputText = $(this).val();
+      if (inputText.length > 400) {
+        $(this).val(inputText.substr(0, 400));
+      }
+  
+      var remainingChars = Math.max(0, 400 - inputText.length);
       $("#count").text("Characters left: " + remainingChars);
   
       // Clear previous error messages
       $('#error_message').text("");
     });
   
-    // Event handler for submit button
     $('#submit_text').on('click', function () {
-      // Get the entered description
-      var description = $('#description').val();
-    
-      // Validate conditions
-      if (!description || description.length < 200 || description.length > 400) {
-        // Show error message if validation fails
-        showError(description ? 'Please enter between 200 and 400 characters' : 'Please enter text');
-      } else {
-        // If no errors, hide the text, store the description, show an alert, and initiate further action
+      var error = 0;
+      var errormsg = "";
+  
+      if ($('#description').val() == "") {
+        error = 1;
+        errormsg = 'Please enter text';
+      } else if ($('#description').val().length < 200) {
+        error = 1;
+        errormsg = 'Please write a bit more (at least 200 characters)';
+      } else if ($('#description').val().length > 400) {
+        error = 1;
+        errormsg = 'Please enter 400 characters or less';
+      }
+  
+      if (error == 0) {
         $('#text').hide();
-        window.description = description;
-        alert(description);
+        window.description = $('#description').val();
+        globalDescription = $('#description').val();
+        totalLink += "&description=" + globalDescription
         init_fb_intro();
+      } else {
+        // Display the error message
+        $('#error_message').text(errormsg);
       }
     });
   }
@@ -246,22 +276,150 @@ function init_name() {
     }
     reorder();
 
-    // When user receives likes
-    $('.userslikes').each(function() {
-      var that = $(this);
-      var usernames = $(this).data('usernames').split(",");
-      var times = $(this).data('likes').split(",");
+    function LikeDisLike(condition) {
+      var likes = condition.likes;
+      var dislikes = condition.dislikes;
+    
+      $('.userslikes').each(function() {
+        var that = $(this);
+        var usernames = $(this).data('usernames').split(",");
+        var likeCount = 0;
+        var dislikeCount = 0;
+    
+        var usedUsernames = []; // Array to keep track of used usernames
+    
+        for (var i = 0; i < likes.length; i++) {
+          var time = likes[i];
+          var username;
+    
+          // Find an unused username
+          var unusedIndex = usernames.findIndex(function(name) {
+            return !usedUsernames.includes(name);
+          });
+    
+          if (unusedIndex !== -1) {
+            username = usernames[unusedIndex];
+            usedUsernames.push(username); // Add the used username to the array
+          } else {
+            // No more unused usernames, skip this like event
+            continue;
+          }
+    
+          themsg = username + " liked your post";
+          setTimeout(function(themsg) {
+            that.text(parseInt(that.text()) + 1);
+            alertify.success(themsg);
+          }, time, themsg);
+        }
+    
+        for (var i = 0; i < dislikes.length; i++) {
+          var time = dislikes[i];
+          var username;
+    
+          // Find an unused username
+          var unusedIndex = usernames.findIndex(function(name) {
+            return !usedUsernames.includes(name);
+          });
+    
+          if (unusedIndex !== -1) {
+            username = usernames[unusedIndex];
+            usedUsernames.push(username); // Add the used username to the array
+          } else {
+            // No more unused usernames, skip this dislike event
+            continue;
+          }
+    
+          themsg = username + " disliked your post";
+          setTimeout(function(themsg) {
+            $('.usersDislikes').each(function() {
+              $(this).text(parseInt($(this).text()) + 1);
+              alertify.error(themsg);
+            });
+          }, time, themsg);
+        }
+      });
+    }
+    
+    // Call the function for a specific condition
+    LikeDisLike(conditions[assignedConditionNumber]);
 
-      for(var i=0; i<times.length; i++) { 
-        times[i] = +times[i]; 
-        themsg = usernames[i] + " liked your post";
+
+
+
+
+
+    // function LikeDisLike() {
+    //   $('.userslikes').each(function() {
+    //   var that = $(this);
+    //   var usernames = $(this).data('usernames').split(",");
+    //   var times = $(this).data('likes').split(",");
+  
+    //   for(var i=0; i<times.length; i++) {
+    //     times[i] = +times[i];
+    //     if(times[i]==10000) {
+    //       themsg = usernames[i] + " liked your post";
+    //       setTimeout(function(themsg) {
+    //         that.text(parseInt(that.text()) + 1);
+    //         alertify.success(themsg)
+    //       }, times[i], themsg);
+    //     }
+    //     else {
+    //       DislikeFunction(times[i],usernames[i]);
+    //     }
+    //   }
+    //   });
+    // }
+  
+    // function DislikeFunction(times,usernames) {
+    //   $('.usersDislikes').each(function(){
+    //     if(times==11111){
+    //       var that = $(this);
+    //       themsg = usernames + " disliked your post";
+    //       setTimeout(function(themsg) {
+    //         that.text(parseInt(that.text()) + 1);
+    //         alertify.error(themsg)
+    //       }, times, themsg);
+    //     }
+    //   });
+    // }
+  
+    // LikeDisLike();  // Initializes the like and dislike
+  
+
+
+    // // When user receives likes
+    // $('.userslikes').each(function() {
+    //   var that = $(this);
+    //   var usernames = $(this).data('usernames').split(",");
+    //   var times = $(this).data('likes').split(",");
+
+    //   for(var i=0; i<times.length; i++) { 
+    //     times[i] = +times[i]; 
+    //     themsg = usernames[i] + " liked your post";
         
-        setTimeout(function(themsg) {
-          that.text(parseInt(that.text()) + 1);
-          alertify.success(themsg)
-        }, times[i], themsg);
-      } 		
-    });
+    //     setTimeout(function(themsg) {
+    //       that.text(parseInt(that.text()) + 1);
+    //       alertify.success(themsg)
+    //     }, times[i], themsg);
+    //   } 		
+    // });
+   
+    // // When user receives Dislikes
+    // $('.usersDislikes').each(function() {
+    //   var that = $(this);
+    //   var usernames = $(this).data('usernames').split(",");
+    //   var times = $(this).data('likes').split(",");
+
+    //   for(var i=0; i<times.length; i++) { 
+    //     times[i] = +times[i]; 
+    //     themsg = usernames[i] + " disliked your post";
+        
+    //     setTimeout(function(themsg) {
+    //       that.text(parseInt(that.text()) + 1);
+    //       alertify.error(themsg)
+    //     }, times[i], themsg);
+    //   } 		
+    // });
 
     // When others receive likes
     $('.otherslikes').each(function() {
