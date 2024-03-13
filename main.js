@@ -12,7 +12,7 @@ $(function() {
      // Condition 2 settings
     2: { likes: [10000,35000,80000,100000,132000,150000], dislikes: [] },
      // Condition 3 settings
-    3: { likes: [10000,20000,35000], dislikes: [11111,22222,33333] }, 
+    3: { likes: [10000,12000,13000], dislikes: [11111,12222,13333] }, 
      // Condition 4 settings
     4: { likes: [], dislikes: [10000,35000,80000,100000,132000,150000] }  
   };
@@ -287,6 +287,7 @@ function init_name() {
         var dislikeCount = 0;
     
         var usedUsernames = []; // Array to keep track of used usernames
+        usernames = usernames.sort(() => Math.random() - 0.5);
     
         for (var i = 0; i < likes.length; i++) {
           var time = likes[i];
@@ -341,7 +342,7 @@ function init_name() {
     }
     
     // Call the function for a specific condition
-    LikeDisLike(conditions[assignedConditionNumber]);
+    LikeDisLike(conditions[3]);
 
 
 
@@ -460,23 +461,27 @@ function init_name() {
       }
     });
 
-    // Initialize like buttons
-    $('.btn-like').on('click', function() {
+// Initialize like buttons
+$('.btn-like').on('click', function() {
+  if (!$(this).prop('disabled') && !$(this).parent().parent().find('.btn-Dislike').prop('disabled')) {
       $(this).prev().text(parseInt($(this).prev().text()) + 1);
-      // Like buttons can only be clicked once
       countlike++;
       $(this).attr("disabled", true);
       $(this).parent().parent().find('.btn-like').attr("disabled", true);
-    });
+      $(this).parent().parent().find('.btn-Dislike').attr("disabled", true);
+  }
+});
 
-    // Initialize Dislike buttons
-    $('.btn-Dislike').on('click', function() {
+// Initialize Dislike buttons
+$('.btn-Dislike').on('click', function() {
+  if (!$(this).prop('disabled') && !$(this).parent().parent().find('.btn-like').prop('disabled')) {
       $(this).prev().text(parseInt($(this).prev().text()) + 1);
       countDislike++;
-      // Like buttons can only be clicked once
       $(this).attr("disabled", true);
       $(this).parent().parent().find('.btn-Dislike').attr("disabled", true);
-    });
+      $(this).parent().parent().find('.btn-like').attr("disabled", true);
+  }
+});
 
     // Initalize Masonry plugin
     // For display of user and other players boxes in columns without gaps
