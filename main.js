@@ -34,10 +34,6 @@ $(function() {
     settings.likes_by = ['Ky', 'Arjen', 'AncaD', 'Nick', 'Heather', 'Jane', 'Georgeee', 'John',  'Mary', 'Lauren', 'Sarah'];
     settings.Dislikes_by = [ 'Lauren', 'Arjen', 'Jane',  'Ky', 'AncaD', 'Nick', 'Heather', 'Georgeee', 'John', 'Mary', 'Sarah'];
     window.query_string =null;
-    alert("Assigned Condition Number:", window.assignedCondition);
-    alert("Likes for condition " + window.assignedCondition + ":", conditions[assignedConditionNumber].likes);
-    alert("Dislikes for condition " + window.assignedCondition + ":", conditions[assignedConditionNumber].dislikes);
-
   }
   
   // -------------------
