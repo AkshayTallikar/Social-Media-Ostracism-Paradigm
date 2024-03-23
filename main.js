@@ -23,17 +23,36 @@ $(function() {
     settings.numberofavatars = 82;
     settings.defaultredirect = 'https://osu.az1.qualtrics.com/jfe/form/SV_eWY4YOSQN3iwdFQ';
     settings.tasklength = 180000;
+
+    var conditions = {
+      // Condition 1 settings
+      1: { likes: [10000, 20000], dislikes: [5000, 10000] }, 
+       // Condition 2 settings
+      2: { likes: [30000, 40000], dislikes: [15000, 20000] },
+       // Condition 3 settings
+      3: { likes: [50000, 60000], dislikes: [25000, 30000] }, 
+       // Condition 4 settings
+      4: { likes: [70000, 80000], dislikes: [35000, 40000] }  
+    };
+    var assignedConditionNumber = getRandomInt(1, 4);
     window.assignedCondition = assignedConditionNumber;
 
     // Apply the likes and dislikes based on the randomly assigned condition
-   window.settings.condition_likes = conditions[assignedConditionNumber].likes;
-   window.settings.condition_Dislikes = conditions[assignedConditionNumber].dislikes;
+    window.settings.condition_likes = conditions[assignedConditionNumber].likes;  
+    window.settings.condition_Dislikes = conditions[assignedConditionNumber].dislikes;
+    
+    // window.settings.condition_likes = [10000,20000,35000,45000,60000,78000,80000,100000,132000];
+    // window.settings.condition_Dislikes = []
 
     window.others.posts[1].likes = [12000,14000,15000,35000,80000];
     window.others.posts[1].Dislikes = [12000,14000,15000,35000,80000];
     settings.likes_by = ['Ky', 'Arjen', 'AncaD', 'Nick', 'Heather', 'Jane', 'Georgeee', 'John',  'Mary', 'Lauren', 'Sarah'];
     settings.Dislikes_by = [ 'Lauren', 'Arjen', 'Jane',  'Ky', 'AncaD', 'Nick', 'Heather', 'Georgeee', 'John', 'Mary', 'Sarah'];
     window.query_string =null;
+    alert("Assigned Condition Number:", window.assignedCondition);
+    alert("Likes for condition " + window.assignedCondition + ":", conditions[assignedConditionNumber].likes);
+    alert("Dislikes for condition " + window.assignedCondition + ":", conditions[assignedConditionNumber].dislikes);
+
   }
   
   // -------------------
