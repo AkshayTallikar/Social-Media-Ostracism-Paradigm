@@ -21,38 +21,18 @@ $(function() {
   function set_settings() {
     window.settings = [];
     settings.numberofavatars = 82;
-    settings.defaultredirect = 'https://osu.az1.qualtrics.com/jfe/form/SV_eWY4YOSQN3iwdFQ';
     settings.tasklength = 180000;
-
-    var conditions = {
-      // Condition 1 settings
-      1: { likes: [10000, 20000], dislikes: [5000, 10000] }, 
-       // Condition 2 settings
-      2: { likes: [30000, 40000], dislikes: [15000, 20000] },
-       // Condition 3 settings
-      3: { likes: [50000, 60000], dislikes: [25000, 30000] }, 
-       // Condition 4 settings
-      4: { likes: [70000, 80000], dislikes: [35000, 40000] }  
-    };
-    var assignedConditionNumber = getRandomInt(1, 4);
     window.assignedCondition = assignedConditionNumber;
 
     // Apply the likes and dislikes based on the randomly assigned condition
-    window.settings.condition_likes = conditions[assignedConditionNumber].likes;  
-    window.settings.condition_Dislikes = conditions[assignedConditionNumber].dislikes;
-    
-    // window.settings.condition_likes = [10000,20000,35000,45000,60000,78000,80000,100000,132000];
-    // window.settings.condition_Dislikes = []
+   window.settings.condition_likes = conditions[assignedConditionNumber].likes;
+   window.settings.condition_Dislikes = conditions[assignedConditionNumber].dislikes;
 
     window.others.posts[1].likes = [12000,14000,15000,35000,80000];
     window.others.posts[1].Dislikes = [12000,14000,15000,35000,80000];
     settings.likes_by = ['Ky', 'Arjen', 'AncaD', 'Nick', 'Heather', 'Jane', 'Georgeee', 'John',  'Mary', 'Lauren', 'Sarah'];
     settings.Dislikes_by = [ 'Lauren', 'Arjen', 'Jane',  'Ky', 'AncaD', 'Nick', 'Heather', 'Georgeee', 'John', 'Mary', 'Sarah'];
     window.query_string =null;
-    alert("Assigned Condition Number:", window.assignedCondition);
-    alert("Likes for condition " + window.assignedCondition + ":", conditions[assignedConditionNumber].likes);
-    alert("Dislikes for condition " + window.assignedCondition + ":", conditions[assignedConditionNumber].dislikes);
-
   }
   
   // -------------------
@@ -80,37 +60,37 @@ $(function() {
 
   //**Username**
   //Only alphanumeric usernames//
-function init_name() {
-  const nameContainer = $('#name');
-  const usernameInput = $('#username');
-  const submitButton = $('#submit_username');
-
-  nameContainer.show();
-
-  submitButton.on('click', () => {
-    let error = 0;
-    let errormsg = '';
-    const uname = usernameInput.val().trim();
-
-    if (!uname) {
-      error = 1;
-      errormsg = 'Please enter text';
-    } else if (not_alphanumeric(uname)) {
-      error = 1;
-      errormsg = 'Please only letters (and no spaces)';
-    }
-
-    if (error === 0) {
-      nameContainer.hide();
-      window.username = uname;
-      globalUsername = uname;
-      totalLink += "username=" + globalUsername;
-      init_avatar();
-    } else {
-      alertify.log(errormsg, 'error');
-    }
-  });
+  function init_name() { 
+    const nameContainer = $('#name'); 
+    const usernameInput = $('#username'); 
+    const submitButton = $('#submit_username'); 
+    nameContainer.show(); 
+    submitButton.on('click', () => { 
+        let error = 0; 
+        let errormsg = ''; 
+        const uname = usernameInput.val().trim(); 
+        if (!uname) { 
+            error = 1; 
+            errormsg = 'Please enter text'; 
+        } else if (not_alphanumeric(uname)) { 
+            error = 1; 
+            errormsg = 'Please only letters (and no spaces)'; 
+        } else if (uname.length > 12) { // Check if length is over 10 
+            error = 1; 
+            errormsg = 'Username cannot exceed 10 characters'; 
+        } 
+        if (error === 0) { 
+            nameContainer.hide(); 
+            window.username = uname; 
+            globalUsername = uname; 
+            totalLink += "username=" + globalUsername; 
+            init_avatar(); 
+        } else { 
+            alertify.log(errormsg, 'error'); 
+        } 
+    }); 
 }
+
 
 
   // **Slide:** **Avatar**
@@ -124,6 +104,20 @@ function init_name() {
   	{
   		$('.avatars').append('<img id="avatar_' + i+ '" src="avatars/avatar_' + i + '.png" class="avatar" />');
   	}
+
+        // Calculate width of each avatar based on 7 avatars per row
+        var avatarWidth = $('.avatars').width() / 10;
+
+        // Set width and height for each avatar while maintaining aspect ratio
+        $('.avatar').css({
+            'width': avatarWidth + 'px',
+            'height': 'auto' // Auto height to maintain aspect ratio
+        });
+    
+        $('.avatar').on('click', function() {
+            $('.avatar').removeClass('selected');
+            $(this).addClass('selected');
+        });
 
   	$('.avatar').on('click', function() {
   		$('.avatar').removeClass('selected');
@@ -185,7 +179,7 @@ function init_name() {
         init_fb_intro();
       } else {
         // Display the error message
-        $('#error_message').text(errormsg);
+        alertify.log("Please Enter More Characters","error");
       }
     });
   }
