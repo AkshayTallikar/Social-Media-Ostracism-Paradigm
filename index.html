@@ -29,6 +29,8 @@ If you don't have experience with programming, it is important that you alter on
 <![endif]-->
 
 <!-- Javascript -->
+<!-- Add this line to include Handlebars.js -->
+<script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.7/dist/handlebars.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.3.0/mustache.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/alertify.js/0.3.10/alertify.min.js"></script>
@@ -232,49 +234,51 @@ You can edit the instructions text.
 
   {{/posts}}
 </script>
-
-
 <script type="template/text" id="otherstmp">
   {{#posts}}
-    <div class="entry">
+  <div class="entry">
     <div class="tophalf">
-
-    	<img src="{{avatar}}" class="avatar">
-        <h3>{{username}}</h3>
-
-    	<div class="main">
-
-    		<p>{{text}}</p>
-    	</div>
-
-    	<br style="clear:both;">
-
+      <img src="{{avatar}}" class="avatar">
+      <h3>{{username}}</h3>
+      <div class="main">
+        <p>{{text}}</p>
+      </div>
+      <br style="clear:both;">
     </div>
     <div class="bottomhalf">
       <div class="likes-section">
-        Likes <span class="badge badge-custom otherslikes" data-likes="{{likes}}">0</span>
+        Likes
+        <span class="badge badge-custom otherslikes" data-likes="{{likes}}">0</span>
         <button type="submit" class="btn btn-like btn-custom btn-deround">
           <i class="icon-thumbs-up icon-white"></i>
         </button>
       </div>
       <div class="dislikes-section">
-        Dislikes <span class="badge badge-custom othersDislikes" data-likes="{{likes}}">0</span>
+        Dislikes
+        <span class="badge badge-custom othersDislikes" data-likes="{{likes}}">0</span>
         <button type="submit" class="btn btn-Dislike btn-custom2 btn-deround">
           <i class="icon-thumbs-down icon-white"></i>
         </button>
       </div>
-     </div>
-
     </div>
+    <div class="commentBox" data-user-id="{{username}}">
+      <input type="text" class="commentInput" placeholder="Enter your comment..." onkeyup="onCommentInputKeyUp(this)">
+      <button onclick="sendComment(this)">Send</button>
+      <button onclick="viewComments(this)">View</button>
+    </div>
+  </div>
   {{/posts}}
-
-
 </script>
 
+<div class="commentPopup">
+  <div class="commentPopupContent">
+    <span id="commentPopupText"></span>
+    <span class="close" onclick="closePopup()">&times;</span>
+  </div>
+</div>
 
+<script>
 
-
-
-
+</script>
 </body>
 </html>

@@ -22,12 +22,6 @@ $(function() {
     window.settings = [];
     settings.numberofavatars = 82;
     settings.tasklength = 180000;
-    window.assignedCondition = assignedConditionNumber;
-
-    // Apply the likes and dislikes based on the randomly assigned condition
-   window.settings.condition_likes = conditions[assignedConditionNumber].likes;
-   window.settings.condition_Dislikes = conditions[assignedConditionNumber].dislikes;
-
     window.others.posts[1].likes = [12000,14000,15000,35000,80000];
     window.others.posts[1].Dislikes = [12000,14000,15000,35000,80000];
     settings.likes_by = ['Ky', 'Arjen', 'AncaD', 'Nick', 'Heather', 'Jane', 'Georgeee', 'John',  'Mary', 'Lauren', 'Sarah'];
@@ -35,7 +29,7 @@ $(function() {
     window.query_string =null;
   }
   
-  // -------------------
+  //--------------------------------------------------------------------------------------------------------------------------\\
   // Above were the basic parameters you can adjust using the instructions.
   // The remaining code is also annotated, but we do not recommend changing it, unless you are comfortable with web programming.
   // -------------------
@@ -351,9 +345,10 @@ $(function() {
     }
     
     // Call the function for a specific condition
-    LikeDisLike(conditions[3]);
+    LikeDisLike(conditions[assignedConditionNumber]);
 
 
+    
 
 
 
@@ -431,6 +426,8 @@ $(function() {
     //   } 		
     // });
 
+    
+
     // When others receive likes
     $('.otherslikes').each(function() {
       var that = $(this);
@@ -505,7 +502,7 @@ $('.btn-Dislike').on('click', function() {
       $('#timer').text('00:00');
     },window.settings.tasklength); // timing for task
   }
-
+ 
   // Function to check letters and numbers
   // via http://www.w3resource.com/javascript/form/letters-numbers-field.php
   function not_alphanumeric(inputtxt) {
@@ -566,3 +563,100 @@ $('.btn-Dislike').on('click', function() {
   // Start with the intro slide
   init_intro();
 });
+// Object to store comments for each user
+let comments = {};
+
+// Function to handle comment input key up event
+function onCommentInputKeyUp(input) {
+  // Check if the backspace key was pressed
+  if (event.key === "Backspace") {
+    // Get the current value of the input field
+    const currentValue = input.value;
+
+    // Check if the input field is not empty
+    if (currentValue.length > 0) {
+      // Remove the last character from the input field
+      input.value = currentValue.slice(0, -1);
+    }
+  }
+}
+// Function to send a comment
+function sendComment(btn) {
+    // Get the comment box element
+    const commentBox = btn.closest(".commentBox");
+    // Get the user ID (username) from the comment box
+    const userId = commentBox.getAttribute("data-user-id");
+    // const name = "akshay"
+      
+    const username = window.username;
+
+    // Get the input element for this particular comment box
+    const commentInput = commentBox.querySelector(".commentInput");
+    // Get the comment text from the input
+    const commentText = commentInput.value.trim();
+
+    // If the comment text is not empty
+    if (commentText) {
+        // Add the comment to the comments object for this user
+        if (!comments[userId]) {
+            comments[userId] = [];
+        }
+        // Append the username and comment to the comments array
+        comments[userId].push(`${username}: ${commentText}`);
+
+        // Clear the input
+        commentInput.value = "";
+
+        // Notify other users about the new comment
+        window.others.forEach((otherId) => {
+            if (otherId !== userId) {
+                notifyOtherUser(otherId, userId, commentText);
+            }
+        });
+    }
+}
+
+// Function to view comments for a particular user
+function viewComments(btn) {
+    // Get the comment box element
+    const commentBox = btn.closest(".commentBox");
+    // Get the user ID from the comment box
+    const userId = commentBox.getAttribute("data-user-id");
+    // Open the comment popup
+    openCommentPopup(userId);
+}
+
+// Function to open the comment popup
+function openCommentPopup(userId) {
+  // Get the popup elements
+  const commentPopup = document.querySelector(".commentPopup");
+  const commentPopupText = document.getElementById("commentPopupText");
+
+  // Check if there are any comments for the user
+  if (comments[userId]) {
+    // Sort the comments in their original order
+    const sortedComments = comments[userId].slice();
+
+    // Build the comment popup text
+    let commentText = "";
+    sortedComments.forEach((comment) => {
+      commentText += `<div class="comment">${comment}</div>`;
+    });
+
+    // Set the popup text
+    commentPopupText.innerHTML = commentText;
+  } else {
+    // Set the popup text to indicate no comments
+    commentPopupText.textContent = "No comments yet.";
+  }
+
+  // Show the popup
+  commentPopup.style.display = "block";
+}
+// Function to close the comment popup
+function closePopup() {
+    // Get the popup element
+    const commentPopup = document.querySelector(".commentPopup");
+    // Hide the popup
+    commentPopup.style.display = "none";
+}
